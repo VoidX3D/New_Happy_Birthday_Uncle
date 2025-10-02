@@ -360,7 +360,7 @@ def run_all_tests():
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
     
     if passed_tests == total_tests:
-        print("🎉 All backend API tests passed! The birthday card API is working correctly.")
+        print("🎉 All backend API tests passed! The luxury birthday card API is working correctly.")
         return True
     else:
         print("⚠️  Some tests failed. Please check the detailed output above.")
