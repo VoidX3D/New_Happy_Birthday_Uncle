@@ -334,13 +334,15 @@ def test_confetti_sound_endpoint():
 
 def run_all_tests():
     """Run all backend API tests"""
-    print("🎂 Starting Birthday Card Backend API Tests")
+    print("🎂 Starting Luxury Birthday Card Backend API Tests")
     print(f"Testing API at: {API_BASE}")
     
     results = {
         'health': test_health_endpoint(),
         'birthday_info': test_birthday_info_endpoint(),
+        'placeholder_images': test_placeholder_images(),
         'upload_photo': test_upload_photo_endpoint(),
+        'confetti_sound': test_confetti_sound_endpoint(),
         'invalid_endpoint': test_invalid_endpoint()
     }
     
