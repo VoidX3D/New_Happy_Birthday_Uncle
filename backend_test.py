@@ -119,13 +119,14 @@ def test_upload_photo_endpoint():
             'photo': ('test_photo.jpg', BytesIO(mock_image_data), 'image/jpeg')
         }
         
-        response = requests.post(f"{API_BASE}/upload-photo", files=files, timeout=10)
+        data = {'type': 'profile'}  # Test with photo type
+        response = requests.post(f"{API_BASE}/upload-photo", files=files, data=data, timeout=10)
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
         
         if response.status_code == 200:
             data = response.json()
-            required_fields = ['success', 'message', 'filename', 'size', 'type']
+            required_fields = ['success', 'message', 'filename', 'size', 'type', 'uploadedAt', 'placeholder']
             
             # Check if all required fields are present
             missing_fields = [field for field in required_fields if field not in data]
@@ -140,11 +141,16 @@ def test_upload_photo_endpoint():
                 elif data.get('filename') != 'test_photo.jpg':
                     print(f"❌ Expected filename 'test_photo.jpg', got '{data.get('filename')}'")
                     test1_result = False
-                elif '📸' not in data.get('message', ''):
-                    print(f"❌ Expected success message with camera emoji, got '{data.get('message')}'")
+                elif 'Beautiful' not in data.get('message', ''):
+                    print(f"❌ Expected success message with 'Beautiful', got '{data.get('message')}'")
+                    test1_result = False
+                elif 'uploadedAt' not in data:
+                    print(f"❌ Missing uploadedAt timestamp")
                     test1_result = False
                 else:
                     print("✅ Valid photo upload working correctly")
+                    print(f"   Message: {data.get('message')}")
+                    print(f"   Placeholder: {data.get('placeholder')}")
                     test1_result = True
         else:
             print(f"❌ Photo upload failed with status {response.status_code}")
