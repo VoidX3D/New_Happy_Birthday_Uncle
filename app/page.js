@@ -290,19 +290,50 @@ export default function RetroLuxuryBirthdayCard() {
     })
   }
 
-  // Start continuous music loop
-  const startContinuousMusic = () => {
+  // MP3 Audio Implementation with Synthesized Fallback
+  const playBirthdayMusic = async () => {
+    if (isMuted) return
+
+    try {
+      // Try to play MP3 version first
+      if (mp3AudioRef.current) {
+        mp3AudioRef.current.pause()
+        mp3AudioRef.current.currentTime = 0
+      }
+
+      mp3AudioRef.current = new Audio('/audio/happy-birthday.mp3')
+      mp3AudioRef.current.volume = 0.8
+      mp3AudioRef.current.loop = true
+      
+      // Add event listeners for better control
+      mp3AudioRef.current.addEventListener('canplaythrough', () => {
+        console.log('🎵 MP3 Birthday music loaded successfully')
+      })
+      
+      mp3AudioRef.current.addEventListener('error', (e) => {
+        console.log('🎵 MP3 failed, using synthesized fallback:', e.message)
+        createAdvancedBirthdayMusic()
+      })
+
+      await mp3AudioRef.current.play()
+      console.log('🎵 Playing MP3 birthday song')
+      
+    } catch (error) {
+      console.log('🎵 MP3 playback failed, using synthesized music:', error.message)
+      // Fallback to synthesized version
+      createAdvancedBirthdayMusic()
+    }
+  }
+
+  // Stop MP3 music
+  const stopBirthdayMusic = () => {
+    if (mp3AudioRef.current) {
+      mp3AudioRef.current.pause()
+      mp3AudioRef.current.currentTime = 0
+    }
     if (musicIntervalRef.current) {
       clearInterval(musicIntervalRef.current)
     }
-    
-    createAdvancedBirthdayMusic()
-    
-    musicIntervalRef.current = setInterval(() => {
-      if (!isMuted && isPlaying) {
-        createAdvancedBirthdayMusic()
-      }
-    }, 20000) // Repeat every 20 seconds
   }
 
   // Enhanced confetti system
