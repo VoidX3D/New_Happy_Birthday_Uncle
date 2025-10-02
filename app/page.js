@@ -88,6 +88,7 @@ export default function RetroLuxuryBirthdayCard() {
   const confettiRef = useRef([])
   const animationRef = useRef(null)
   const musicIntervalRef = useRef(null)
+  const mp3AudioRef = useRef(null)
 
   // Get current date in both calendars
   const getCurrentDate = () => {
