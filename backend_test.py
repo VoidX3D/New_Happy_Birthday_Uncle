@@ -203,7 +203,7 @@ def test_invalid_endpoint():
         
         if response.status_code == 200:
             data = response.json()
-            if data.get('message') == 'Birthday Card API is running':
+            if data.get('message') == 'Luxury Birthday Card API is running':
                 print("✅ Invalid GET endpoint returns default message correctly")
                 return True
             else:
