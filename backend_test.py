@@ -220,6 +220,118 @@ def test_invalid_endpoint():
         print(f"❌ Invalid endpoint returned invalid JSON: {e}")
         return False
 
+def test_placeholder_images():
+    """Test GET /api/placeholder/* endpoints for SVG image generation"""
+    print("\n=== Testing Placeholder Image Endpoints ===")
+    
+    # Test profile placeholder
+    print("\n--- Test 1: Profile Placeholder ---")
+    try:
+        response = requests.get(f"{API_BASE}/placeholder/profile", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            content_type = response.headers.get('Content-Type', '')
+            if 'image/svg+xml' in content_type:
+                svg_content = response.text
+                if '<svg' in svg_content and 'Uncle\'s Portrait' in svg_content:
+                    print("✅ Profile placeholder SVG generated correctly")
+                    profile_result = True
+                else:
+                    print(f"❌ Invalid SVG content for profile placeholder")
+                    profile_result = False
+            else:
+                print(f"❌ Expected SVG content type, got: {content_type}")
+                profile_result = False
+        else:
+            print(f"❌ Profile placeholder failed with status {response.status_code}")
+            profile_result = False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Profile placeholder request failed: {e}")
+        profile_result = False
+    
+    # Test celebration placeholders
+    celebration_results = []
+    for i in range(1, 5):
+        print(f"\n--- Test {i+1}: Celebration-{i} Placeholder ---")
+        try:
+            response = requests.get(f"{API_BASE}/placeholder/celebration-{i}", timeout=10)
+            print(f"Status Code: {response.status_code}")
+            
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type', '')
+                if 'image/svg+xml' in content_type:
+                    svg_content = response.text
+                    if '<svg' in svg_content and f'Memory {i}' in svg_content:
+                        print(f"✅ Celebration-{i} placeholder SVG generated correctly")
+                        celebration_results.append(True)
+                    else:
+                        print(f"❌ Invalid SVG content for celebration-{i} placeholder")
+                        celebration_results.append(False)
+                else:
+                    print(f"❌ Expected SVG content type, got: {content_type}")
+                    celebration_results.append(False)
+            else:
+                print(f"❌ Celebration-{i} placeholder failed with status {response.status_code}")
+                celebration_results.append(False)
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Celebration-{i} placeholder request failed: {e}")
+            celebration_results.append(False)
+    
+    return profile_result and all(celebration_results)
+
+def test_confetti_sound_endpoint():
+    """Test POST /api/confetti-sound endpoint"""
+    print("\n=== Testing Confetti Sound Endpoint ===")
+    try:
+        response = requests.post(f"{API_BASE}/confetti-sound", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.text}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            required_fields = ['sounds', 'message']
+            
+            # Check if all required fields are present
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                print(f"❌ Missing required fields: {missing_fields}")
+                return False
+            
+            # Check sounds array structure
+            sounds = data.get('sounds', [])
+            if not isinstance(sounds, list) or len(sounds) == 0:
+                print(f"❌ Expected sounds array, got: {sounds}")
+                return False
+            
+            # Check each sound object has required properties
+            for i, sound in enumerate(sounds):
+                required_sound_fields = ['frequency', 'duration', 'type']
+                missing_sound_fields = [field for field in required_sound_fields if field not in sound]
+                if missing_sound_fields:
+                    print(f"❌ Sound {i+1} missing fields: {missing_sound_fields}")
+                    return False
+            
+            # Check message
+            if 'Enhanced confetti sound configuration' not in data.get('message', ''):
+                print(f"❌ Expected enhanced confetti message, got: {data.get('message')}")
+                return False
+            
+            print("✅ Confetti sound endpoint working correctly")
+            print(f"   Number of sounds: {len(sounds)}")
+            print(f"   Message: {data.get('message')}")
+            return True
+        else:
+            print(f"❌ Confetti sound endpoint failed with status {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Confetti sound endpoint request failed: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Confetti sound endpoint returned invalid JSON: {e}")
+        return False
+
 def run_all_tests():
     """Run all backend API tests"""
     print("🎂 Starting Birthday Card Backend API Tests")
