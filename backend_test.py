@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Birthday Card Application
-Tests all API endpoints: health, birthday-info, and upload-photo
+Backend API Testing for Luxury Birthday Card Application
+Tests all enhanced API endpoints: health, birthday-info, placeholder images, upload-photo, and confetti-sound
 """
 
 import requests
