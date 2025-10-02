@@ -439,6 +439,10 @@ export default function RetroLuxuryBirthdayCard() {
       if (musicIntervalRef.current) {
         clearInterval(musicIntervalRef.current)
       }
+      if (mp3AudioRef.current) {
+        mp3AudioRef.current.pause()
+        mp3AudioRef.current = null
+      }
     }
   }, [])
 
