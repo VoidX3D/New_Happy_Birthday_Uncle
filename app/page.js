@@ -412,14 +412,12 @@ export default function RetroLuxuryBirthdayCard() {
   const toggleMute = () => {
     setIsMuted(!isMuted)
     if (!isMuted) {
-      // Stopping music
-      if (musicIntervalRef.current) {
-        clearInterval(musicIntervalRef.current)
-      }
+      // Muting - stop all audio
+      stopBirthdayMusic()
     } else {
-      // Starting music
+      // Unmuting - restart music if card is open
       if (isPlaying) {
-        startContinuousMusic()
+        playBirthdayMusic()
       }
     }
   }
