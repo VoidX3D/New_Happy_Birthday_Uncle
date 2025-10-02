@@ -36,8 +36,8 @@ def test_health_endpoint():
                 print(f"❌ Expected status 'healthy', got '{data.get('status')}'")
                 return False
                 
-            if data.get('service') != 'Birthday Card API':
-                print(f"❌ Expected service 'Birthday Card API', got '{data.get('service')}'")
+            if data.get('service') != 'Luxury Birthday Card API':
+                print(f"❌ Expected service 'Luxury Birthday Card API', got '{data.get('service')}'")
                 return False
                 
             print("✅ Health endpoint working correctly")
