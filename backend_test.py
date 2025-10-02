@@ -72,16 +72,16 @@ def test_birthday_info_endpoint():
                 return False
                 
             # Check specific values
-            if data.get('celebrant') != 'Uncle Rajendra Regmi':
-                print(f"❌ Expected celebrant 'Uncle Rajendra Regmi', got '{data.get('celebrant')}'")
+            if data.get('celebrant') != 'Dear Uncle - Rajendra Regmi':
+                print(f"❌ Expected celebrant 'Dear Uncle - Rajendra Regmi', got '{data.get('celebrant')}'")
                 return False
                 
             if data.get('birthdayBS') != 'Asoj 16, 2082':
                 print(f"❌ Expected birthday 'Asoj 16, 2082', got '{data.get('birthdayBS')}'")
                 return False
                 
-            if '🎂' not in data.get('message', ''):
-                print(f"❌ Expected birthday message with cake emoji, got '{data.get('message')}'")
+            if 'Happy Birthday' not in data.get('message', ''):
+                print(f"❌ Expected birthday message with 'Happy Birthday', got '{data.get('message')}'")
                 return False
                 
             # Check that currentDateAD is a properly formatted date string
