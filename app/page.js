@@ -104,95 +104,188 @@ export default function RetroLuxuryBirthdayCard() {
 
   const { adDate, bsDate } = getCurrentDate()
 
-  // Enhanced Birthday Music System
+  // Professional Orchestra-Style Birthday Music
   const createAdvancedBirthdayMusic = () => {
     if (!audioContextRef.current || isMuted) return
 
     const ctx = audioContextRef.current
     
-    // Happy Birthday Melody - Full song
+    // Complete Happy Birthday arrangement
     const melody = [
-      { freq: 523.25, duration: 0.5 }, // C - Hap-
-      { freq: 523.25, duration: 0.5 }, // C - py
-      { freq: 587.33, duration: 1.0 }, // D - Birth-
-      { freq: 523.25, duration: 1.0 }, // C - day
-      { freq: 698.46, duration: 1.0 }, // F - to
-      { freq: 659.25, duration: 2.0 }, // E - you
+      // Verse 1: "Happy Birthday to you"
+      { freq: 523.25, duration: 0.6, velocity: 0.3 }, // C - Hap-
+      { freq: 523.25, duration: 0.4, velocity: 0.3 }, // C - py
+      { freq: 587.33, duration: 1.2, velocity: 0.4 }, // D - Birth-
+      { freq: 523.25, duration: 1.2, velocity: 0.4 }, // C - day
+      { freq: 698.46, duration: 1.2, velocity: 0.5 }, // F - to
+      { freq: 659.25, duration: 2.4, velocity: 0.4 }, // E - you
       
-      { freq: 523.25, duration: 0.5 }, // C - Hap-
-      { freq: 523.25, duration: 0.5 }, // C - py
-      { freq: 587.33, duration: 1.0 }, // D - Birth-
-      { freq: 523.25, duration: 1.0 }, // C - day
-      { freq: 783.99, duration: 1.0 }, // G - to
-      { freq: 698.46, duration: 2.0 }, // F - you
+      // Verse 2: "Happy Birthday to you"
+      { freq: 523.25, duration: 0.6, velocity: 0.35 },
+      { freq: 523.25, duration: 0.4, velocity: 0.35 },
+      { freq: 587.33, duration: 1.2, velocity: 0.45 },
+      { freq: 523.25, duration: 1.2, velocity: 0.45 },
+      { freq: 783.99, duration: 1.2, velocity: 0.55 }, // G
+      { freq: 698.46, duration: 2.4, velocity: 0.45 }, // F
       
-      { freq: 523.25, duration: 0.5 }, // C - Hap-
-      { freq: 523.25, duration: 0.5 }, // C - py
-      { freq: 1046.50, duration: 1.0 }, // C - Birth-
-      { freq: 880.00, duration: 1.0 }, // A - day
-      { freq: 698.46, duration: 1.0 }, // F - dear
-      { freq: 659.25, duration: 1.0 }, // E - Un-
-      { freq: 587.33, duration: 2.0 }, // D - cle
+      // Verse 3: "Happy Birthday dear Uncle"
+      { freq: 523.25, duration: 0.6, velocity: 0.4 },
+      { freq: 523.25, duration: 0.4, velocity: 0.4 },
+      { freq: 1046.50, duration: 1.2, velocity: 0.6 }, // High C
+      { freq: 880.00, duration: 1.2, velocity: 0.5 }, // A
+      { freq: 698.46, duration: 1.2, velocity: 0.5 }, // F - dear
+      { freq: 659.25, duration: 1.2, velocity: 0.4 }, // E - Un-
+      { freq: 587.33, duration: 2.4, velocity: 0.4 }, // D - cle
       
-      { freq: 932.33, duration: 0.5 }, // A# - Hap-
-      { freq: 932.33, duration: 0.5 }, // A# - py
-      { freq: 880.00, duration: 1.0 }, // A - Birth-
-      { freq: 698.46, duration: 1.0 }, // F - day
-      { freq: 783.99, duration: 1.0 }, // G - to
-      { freq: 698.46, duration: 3.0 }, // F - you!
+      // Verse 4: "Happy Birthday to you!"
+      { freq: 932.33, duration: 0.6, velocity: 0.45 }, // A#
+      { freq: 932.33, duration: 0.4, velocity: 0.45 },
+      { freq: 880.00, duration: 1.2, velocity: 0.5 }, // A
+      { freq: 698.46, duration: 1.2, velocity: 0.5 }, // F
+      { freq: 783.99, duration: 1.2, velocity: 0.55 }, // G
+      { freq: 698.46, duration: 3.6, velocity: 0.6 }, // F - finale
     ]
 
-    // Bass line for depth
-    const bassLine = [
-      { freq: 261.63, duration: 2.0 }, // C
-      { freq: 349.23, duration: 2.0 }, // F
-      { freq: 261.63, duration: 2.0 }, // C
-      { freq: 392.00, duration: 2.0 }, // G
+    // Rich bass accompaniment
+    const bassNotes = [
+      { freq: 261.63, duration: 4.8, velocity: 0.25 }, // C major
+      { freq: 349.23, duration: 4.8, velocity: 0.25 }, // F major
+      { freq: 261.63, duration: 4.8, velocity: 0.25 }, // C major
+      { freq: 392.00, duration: 4.8, velocity: 0.25 }, // G major
+      { freq: 261.63, duration: 4.8, velocity: 0.25 }, // C major
+      { freq: 349.23, duration: 4.8, velocity: 0.25 }, // F major
+      { freq: 392.00, duration: 2.4, velocity: 0.25 }, // G major
+      { freq: 261.63, duration: 2.4, velocity: 0.3 }   // C major finale
     ]
 
-    let currentTime = ctx.currentTime
-    
-    // Play melody
+    // Harmony line for richness
+    const harmony = [
+      { freq: 659.25, duration: 2.4, velocity: 0.2 }, // E
+      { freq: 698.46, duration: 2.4, velocity: 0.2 }, // F
+      { freq: 783.99, duration: 2.4, velocity: 0.2 }, // G
+      { freq: 880.00, duration: 2.4, velocity: 0.2 }, // A
+      { freq: 523.25, duration: 2.4, velocity: 0.2 }, // C
+      { freq: 587.33, duration: 2.4, velocity: 0.2 }, // D
+      { freq: 659.25, duration: 2.4, velocity: 0.2 }, // E
+      { freq: 523.25, duration: 2.4, velocity: 0.25 } // C finale
+    ]
+
+    let currentTime = ctx.currentTime + 0.1
+
+    // Create main melody with realistic instrument sound
     melody.forEach(note => {
-      const oscillator = ctx.createOscillator()
-      const gainNode = ctx.createGain()
+      // Primary melody voice
+      const oscillator1 = ctx.createOscillator()
+      const gainNode1 = ctx.createGain()
+      const filter1 = ctx.createBiquadFilter()
       
-      oscillator.connect(gainNode)
-      gainNode.connect(ctx.destination)
+      oscillator1.connect(filter1)
+      filter1.connect(gainNode1)
+      gainNode1.connect(ctx.destination)
       
-      oscillator.frequency.value = note.freq
-      oscillator.type = 'sine'
+      oscillator1.frequency.value = note.freq
+      oscillator1.type = 'sine'
+      filter1.type = 'lowpass'
+      filter1.frequency.value = 2000
       
-      gainNode.gain.setValueAtTime(0, currentTime)
-      gainNode.gain.linearRampToValueAtTime(0.4, currentTime + 0.05)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration)
+      gainNode1.gain.setValueAtTime(0, currentTime)
+      gainNode1.gain.linearRampToValueAtTime(note.velocity, currentTime + 0.1)
+      gainNode1.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration)
       
-      oscillator.start(currentTime)
-      oscillator.stop(currentTime + note.duration)
+      oscillator1.start(currentTime)
+      oscillator1.stop(currentTime + note.duration)
+      
+      // Add slight vibrato for realism
+      const vibrato = ctx.createOscillator()
+      const vibratoGain = ctx.createGain()
+      vibrato.connect(vibratoGain)
+      vibratoGain.connect(oscillator1.frequency)
+      vibrato.frequency.value = 5
+      vibratoGain.gain.value = 3
+      vibrato.start(currentTime)
+      vibrato.stop(currentTime + note.duration)
       
       currentTime += note.duration
     })
 
-    // Play bass accompaniment
-    let bassTime = ctx.currentTime
-    bassLine.forEach(note => {
+    // Rich bass line
+    let bassTime = ctx.currentTime + 0.1
+    bassNotes.forEach(note => {
       const oscillator = ctx.createOscillator()
       const gainNode = ctx.createGain()
+      const filter = ctx.createBiquadFilter()
       
-      oscillator.connect(gainNode)
+      oscillator.connect(filter)
+      filter.connect(gainNode)
       gainNode.connect(ctx.destination)
       
       oscillator.frequency.value = note.freq
       oscillator.type = 'sawtooth'
+      filter.type = 'lowpass'
+      filter.frequency.value = 800
       
       gainNode.gain.setValueAtTime(0, bassTime)
-      gainNode.gain.linearRampToValueAtTime(0.2, bassTime + 0.1)
+      gainNode.gain.linearRampToValueAtTime(note.velocity, bassTime + 0.2)
       gainNode.gain.exponentialRampToValueAtTime(0.01, bassTime + note.duration)
       
       oscillator.start(bassTime)
       oscillator.stop(bassTime + note.duration)
       
       bassTime += note.duration
+    })
+
+    // Harmony line for orchestral feel
+    let harmonyTime = ctx.currentTime + 0.1
+    harmony.forEach(note => {
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+      const filter = ctx.createBiquadFilter()
+      
+      oscillator.connect(filter)
+      filter.connect(gainNode)
+      gainNode.connect(ctx.destination)
+      
+      oscillator.frequency.value = note.freq
+      oscillator.type = 'triangle'
+      filter.type = 'highpass'
+      filter.frequency.value = 200
+      
+      gainNode.gain.setValueAtTime(0, harmonyTime)
+      gainNode.gain.linearRampToValueAtTime(note.velocity, harmonyTime + 0.15)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, harmonyTime + note.duration)
+      
+      oscillator.start(harmonyTime)
+      oscillator.stop(harmonyTime + note.duration)
+      
+      harmonyTime += note.duration
+    })
+
+    // Add percussion/rhythm
+    const percussion = [0, 1.2, 2.4, 3.6, 4.8, 6.0, 7.2, 8.4, 9.6, 10.8, 12.0, 13.2]
+    percussion.forEach(beatTime => {
+      const noise = ctx.createBufferSource()
+      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate)
+      const data = noiseBuffer.getChannelData(0)
+      for (let i = 0; i < data.length; i++) {
+        data[i] = Math.random() * 2 - 1
+      }
+      noise.buffer = noiseBuffer
+      
+      const noiseGain = ctx.createGain()
+      const noiseFilter = ctx.createBiquadFilter()
+      
+      noise.connect(noiseFilter)
+      noiseFilter.connect(noiseGain)
+      noiseGain.connect(ctx.destination)
+      
+      noiseFilter.type = 'highpass'
+      noiseFilter.frequency.value = 1000
+      
+      noiseGain.gain.setValueAtTime(0.1, ctx.currentTime + beatTime)
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + beatTime + 0.1)
+      
+      noise.start(ctx.currentTime + beatTime)
+      noise.stop(ctx.currentTime + beatTime + 0.1)
     })
   }
 
