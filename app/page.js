@@ -405,7 +405,7 @@ export default function RetroLuxuryBirthdayCard() {
     // Start music after envelope opens
     setTimeout(() => {
       setIsPlaying(true)
-      startContinuousMusic()
+      playBirthdayMusic()
     }, 2000)
   }
 
