@@ -160,7 +160,9 @@ def test_upload_photo_endpoint():
     # Test 2: No photo provided (error case)
     print("\n--- Test 2: No Photo Provided (Error Case) ---")
     try:
-        response = requests.post(f"{API_BASE}/upload-photo", data={}, timeout=10)
+        # Send multipart form data but without the 'photo' field
+        files = {'other_field': ('test.txt', 'some data', 'text/plain')}
+        response = requests.post(f"{API_BASE}/upload-photo", files=files, timeout=10)
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
         
