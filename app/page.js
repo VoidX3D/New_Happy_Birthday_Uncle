@@ -598,7 +598,7 @@ export default function RetroLuxuryBirthdayCard() {
                     <img 
                       src="/placeholders/uncle-profile.png" 
                       alt="Profile placeholder" 
-                      className="hidden" 
+                      className="w-full h-full object-cover" 
                       onError={(e) => e.target.style.display = 'none'}
                     />
                   </div>
@@ -621,7 +621,7 @@ export default function RetroLuxuryBirthdayCard() {
                         <img 
                           src={`/placeholders/celebration-${item}.png`} 
                           alt={`Celebration ${item} placeholder`}
-                          className="hidden" 
+                          className="w-full h-full object-cover" 
                           onError={(e) => e.target.style.display = 'none'}
                         />
                       </div>
