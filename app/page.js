@@ -1,4 +1,4 @@
-update this to make the images work 'use client'
+'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
