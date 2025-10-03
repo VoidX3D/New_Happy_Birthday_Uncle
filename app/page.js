@@ -615,11 +615,11 @@ export default function RetroLuxuryBirthdayCard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
-                    {[1, 2, 3, 4].map((item) => (
+                    {[1, 2, 3, 4, 5].map((item) => (
                       <div key={item} className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative">
                         <Upload className="w-8 h-8 text-slate-400" />
                         <img 
-                          src ={`/placeholders/celebration-${item}.png`} 
+                          src={`/placeholders/celebration-${item}.png`} 
                           alt={`Celebration ${item} placeholder`}
                           className="hidden" 
                           onError={(e) => e.target.style.display = 'none'}
