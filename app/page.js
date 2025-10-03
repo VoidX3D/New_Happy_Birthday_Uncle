@@ -596,9 +596,11 @@ export default function RetroLuxuryBirthdayCard() {
                     </div>
                     {/* Placeholder image file */}
                     <img 
-                      src="/api/placeholder/profile" 
-                      alt="Profile placeholder" 
-                      className="hidden" 
+                      src="/images/placeholders/uncle-profile.png" 
+                      alt="Uncle Rajendra Regmi" 
+                      width = {300}
+                      height={300}
+                      className="rounded-xl shadow-lg object-cover" 
                       onError={(e) => e.target.style.display = 'none'}
                     />
                   </div>
