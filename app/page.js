@@ -32,11 +32,7 @@ class ConfettiParticle {
     this.vy += this.gravity
     this.rotation += this.rotationSpeed
     this.life -= this.decay
-    
-    if (this.y > this.canvas.height + 20 || this.life <= 0) {
-      return false
-    }
-    return true
+    return !(this.y > this.canvas.height + 20 || this.life <= 0)
   }
 
   draw() {
@@ -45,7 +41,6 @@ class ConfettiParticle {
     this.ctx.translate(this.x, this.y)
     this.ctx.rotate((this.rotation * Math.PI) / 180)
     this.ctx.fillStyle = this.color
-    
     if (this.shape === 'circle') {
       this.ctx.beginPath()
       this.ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2)
@@ -53,26 +48,20 @@ class ConfettiParticle {
     } else {
       this.ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size)
     }
-    
     this.ctx.restore()
   }
 
   playSound() {
     if (!this.audioContext || this.audioContext.state !== 'running') return
-    
     const oscillator = this.audioContext.createOscillator()
     const gainNode = this.audioContext.createGain()
-    
     oscillator.connect(gainNode)
     gainNode.connect(this.audioContext.destination)
-    
     oscillator.frequency.value = 800 + Math.random() * 400
     oscillator.type = 'sine'
-    
     gainNode.gain.setValueAtTime(0, this.audioContext.currentTime)
     gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext.currentTime + 0.01)
     gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2)
-    
     oscillator.start(this.audioContext.currentTime)
     oscillator.stop(this.audioContext.currentTime + 0.2)
   }
@@ -87,7 +76,6 @@ export default function RetroLuxuryBirthdayCard() {
   const audioContextRef = useRef(null)
   const confettiRef = useRef([])
   const animationRef = useRef(null)
-  const musicIntervalRef = useRef(null)
   const mp3AudioRef = useRef(null)
 
   const getCurrentDate = () => {
@@ -104,12 +92,53 @@ export default function RetroLuxuryBirthdayCard() {
 
   const { adDate, bsDate } = getCurrentDate()
 
-  // Play / stop music functions (unchanged)
-  const createAdvancedBirthdayMusic = () => { /* omitted for brevity */ }
-  const playBirthdayMusic = async () => { /* omitted for brevity */ }
-  const stopBirthdayMusic = () => { /* omitted for brevity */ }
+  const playBirthdayMusic = async () => {
+    if (isMuted) return
+    try {
+      if (mp3AudioRef.current) {
+        mp3AudioRef.current.pause()
+        mp3AudioRef.current.currentTime = 0
+      }
+      mp3AudioRef.current = new Audio('/audio/happy-birthday.mp3')
+      mp3AudioRef.current.volume = 0.8
+      mp3AudioRef.current.loop = true
+      await mp3AudioRef.current.play()
+    } catch {
+      console.log('MP3 failed, fallback not implemented yet')
+    }
+  }
 
-  const startEnhancedConfetti = () => { /* omitted for brevity */ }
+  const stopBirthdayMusic = () => {
+    if (mp3AudioRef.current) {
+      mp3AudioRef.current.pause()
+      mp3AudioRef.current.currentTime = 0
+    }
+  }
+
+  const startEnhancedConfetti = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    const ctx = canvas.getContext('2d')
+    for (let i = 0; i < 200; i++) {
+      const particle = new ConfettiParticle(canvas, audioContextRef.current)
+      confettiRef.current.push(particle)
+      if (Math.random() < 0.1) particle.playSound()
+    }
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      confettiRef.current = confettiRef.current.filter(particle => {
+        particle.update()
+        particle.draw()
+        return particle.life > 0
+      })
+      if (confettiRef.current.length > 0) {
+        animationRef.current = requestAnimationFrame(animate)
+      }
+    }
+    animate()
+  }
 
   const handleEnvelopeOpen = async () => {
     if (isEnvelopeAnimating) return
@@ -117,7 +146,9 @@ export default function RetroLuxuryBirthdayCard() {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
     }
-    if (audioContextRef.current.state === 'suspended') await audioContextRef.current.resume()
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume()
+    }
     setTimeout(() => {
       setIsOpen(true)
       startEnhancedConfetti()
@@ -145,14 +176,17 @@ export default function RetroLuxuryBirthdayCard() {
     return () => {
       window.removeEventListener('resize', handleResize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
-      if (musicIntervalRef.current) clearInterval(musicIntervalRef.current)
       if (mp3AudioRef.current) mp3AudioRef.current.pause()
     }
   }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 flex items-center justify-center p-4 overflow-hidden relative">
-      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" style={{ width: '100vw', height: '100vh' }} />
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 pointer-events-none z-50"
+        style={{ width: '100vw', height: '100vh' }}
+      />
       {isOpen && (
         <div className="fixed top-6 right-6 z-40">
           <Button
@@ -165,71 +199,47 @@ export default function RetroLuxuryBirthdayCard() {
           </Button>
         </div>
       )}
+
       <div className="relative z-10 w-full max-w-6xl mx-auto">
         {!isOpen ? (
           <div className="envelope-container perspective-2000" onClick={handleEnvelopeOpen}>
-            {/* Envelope HTML unchanged */}
+            <div className={`luxury-envelope relative mx-auto cursor-pointer transform transition-all duration-1000 ${isEnvelopeAnimating ? 'animate-envelope-open' : 'hover:scale-105 hover:rotate-1'}`}>
+              <div className="absolute inset-0 bg-black/40 blur-2xl transform translate-y-12 scale-110 rounded-xl"></div>
+              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 w-[480px] h-[320px] md:w-[600px] md:h-[400px] rounded-lg shadow-2xl border-2 border-slate-200"></div>
+            </div>
           </div>
         ) : (
-          <div className="opened-card animate-fade-in-up">
-            {/* Header & Date Cards unchanged */}
-
-            {/* Photo Gallery */}
+          <div className="opened-card animate-fade-in-up text-center text-slate-200">
+            <h1 className="text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r from-slate-100 via-emerald-400 to-blue-400 bg-clip-text text-transparent mb-6 animate-shimmer">
+              Happy Birthday!
+            </h1>
+            <p className="text-2xl md:text-3xl font-serif mb-12">Wishing you joy and celebration, Dear Uncle</p>
             <div className="grid md:grid-cols-2 gap-8 mb-12">
-              {/* Profile Picture */}
               <Card className="luxury-glass border-slate-600">
-                <CardHeader>
-                  <CardTitle className="text-slate-100 flex items-center font-serif">
-                    <Camera className="w-5 h-5 mr-2" />
-                    Your Portrait
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-slate-100 flex items-center text-xl font-serif">
+                    <Calendar className="w-6 h-6 mr-3 text-blue-400" />
+                    Today's Date
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="relative">
-                    <div className="aspect-square border-2 border-dashed border-slate-500 rounded-lg p-8 text-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50">
-                      <div className="flex flex-col items-center justify-center h-full">
-                        <Upload className="w-16 h-16 mb-4 text-slate-400" />
-                        <p className="text-slate-300 font-serif">Your favorite portrait</p>
-                        <p className="text-slate-500 text-sm mt-2">Click to upload or replace</p>
-                      </div>
-                    </div>
-                    <img 
-                      src="/placeholder/uncle-profile.png" 
-                      alt="Uncle Rajendra Regmi" 
-                      className="rounded-xl shadow-lg object-cover"
-                      onError={(e) => e.target.style.display = 'none'}
-                    />
-                  </div>
+                  <p className="text-slate-300 text-lg font-serif">{adDate}</p>
+                  <p className="text-slate-400 text-sm mt-2">Gregorian Calendar</p>
                 </CardContent>
               </Card>
-
-              {/* Celebration Photos */}
               <Card className="luxury-glass border-slate-600">
-                <CardHeader>
-                  <CardTitle className="text-slate-100 flex items-center font-serif">
-                    <Camera className="w-5 h-5 mr-2" />
-                    Celebration Memories
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-slate-100 flex items-center text-xl font-serif">
+                    <Calendar className="w-6 h-6 mr-3 text-emerald-400" />
+                    Your Special Day
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[1, 2, 3, 4, 5].map((item) => (
-                      <div key={item} className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative">
-                        <Upload className="w-8 h-8 text-slate-400" />
-                        <img
-                          src={`/placeholder/celebration-${item}.png`}
-                          alt={`Celebration ${item}`}
-                          className="rounded-lg object-cover w-full h-full absolute top-0 left-0"
-                          onError={(e) => e.target.style.display = 'none'}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-slate-300 text-lg font-serif">{bsDate}</p>
+                  <p className="text-slate-400 text-sm mt-2">Bikram Sambat Calendar</p>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Birthday Message & Signature unchanged */}
           </div>
         )}
       </div>
