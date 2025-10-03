@@ -598,8 +598,6 @@ export default function RetroLuxuryBirthdayCard() {
                     <img 
                       src="/images/placeholders/uncle-profile.png" 
                       alt="Uncle Rajendra Regmi" 
-                      width = {300}
-                      height={300}
                       className="rounded-xl shadow-lg object-cover" 
                       onError={(e) => e.target.style.display = 'none'}
                     />
@@ -608,30 +606,33 @@ export default function RetroLuxuryBirthdayCard() {
               </Card>
 
               {/* Birthday Photos */}
-              <Card className="luxury-glass border-slate-600">
-                <CardHeader>
-                  <CardTitle className="text-slate-100 flex items-center font-serif">
-                    <Camera className="w-5 h-5 mr-2" />
-                    Celebration Memories
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[1, 2, 3, 4].map((item) => (
-                      <div key={item} className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative">
-                        <Upload className="w-8 h-8 text-slate-400" />
-                        <img 
-                          src={`/api/placeholder/celebration-${item}`} 
-                          alt={`Celebration ${item} placeholder`} 
-                          className="hidden" 
-                          onError={(e) => e.target.style.display = 'none'}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+{/* Birthday Photos */}
+<Card className="luxury-glass border-slate-600">
+  <CardHeader>
+    <CardTitle className="text-slate-100 flex items-center font-serif">
+      <Camera className="w-5 h-5 mr-2" />
+      Celebration Memories
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="grid grid-cols-2 gap-3">
+      {[1, 2, 3, 4, 5].map((item) => (
+        <div
+          key={item}
+          className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative"
+        >
+          <Upload className="w-8 h-8 text-slate-400" />
+          <img
+            src={`/placeholder/celebration-${item}.png`}
+            alt={`Celebration ${item}`}
+            className="hidden"
+            onError={(e) => (e.target.style.display = 'none')}
+          />
+        </div>
+      ))}
+    </div>
+  </CardContent>
+</Card>
 
             {/* Elegant Birthday Message */}
             <Card className="luxury-glass border-slate-600 mb-12">
