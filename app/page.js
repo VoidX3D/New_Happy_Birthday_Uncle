@@ -1,4 +1,4 @@
-only change the part and change it to fit the new path fand nothing else update this to make the images work 'use client'
+'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
