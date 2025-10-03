@@ -1,4 +1,4 @@
-'use client'
+only change the part and change it to fit the new path fand nothing else update this to make the images work 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
@@ -594,25 +594,43 @@ export default function RetroLuxuryBirthdayCard() {
                         <p className="text-slate-500 text-sm mt-2">Click to upload or replace</p>
                       </div>
                     </div>
-            {/* Profile Picture */}
-              <img 
-              src="/placeholders/uncle-profile.png" 
-              alt="Profile placeholder" 
-              className="hidden" 
-               onError={(e) => e.target.style.display = 'none'}
-              />
-{/* Birthday Photos */}
-  {[1, 2, 3, 4, 5].map((item) => (
-    <div key={item} className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative">
-      <Upload className="w-8 h-8 text-slate-400" />
-      <img 
-        src={`/placeholders/celebration-${item}.png`} 
-        alt={`Celebration ${item} placeholder`} 
-        className="hidden" 
-        onError={(e) => e.target.style.display = 'none'}
-      />
-    </div>
-  ))}
+                    {/* Placeholder image file */}
+                    <img 
+                      src="/placeholders/uncle-profile.png" 
+                      alt="Profile placeholder" 
+                      className="hidden" 
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Birthday Photos */}
+              <Card className="luxury-glass border-slate-600">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 flex items-center font-serif">
+                    <Camera className="w-5 h-5 mr-2" />
+                    Celebration Memories
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[1, 2, 3, 4].map((item) => (
+                      <div key={item} className="aspect-square border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-800/50 relative">
+                        <Upload className="w-8 h-8 text-slate-400" />
+                        <img 
+                          src ={`/placeholders/celebration-${item}.png`} 
+                          alt={`Celebration ${item} placeholder`}
+                          className="hidden" 
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Elegant Birthday Message */}
             <Card className="luxury-glass border-slate-600 mb-12">
               <CardContent className="p-12 text-center">
