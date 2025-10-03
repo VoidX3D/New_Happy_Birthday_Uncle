@@ -32,7 +32,8 @@ class ConfettiParticle {
     this.vy += this.gravity
     this.rotation += this.rotationSpeed
     this.life -= this.decay
-    return !(this.y > this.canvas.height + 20 || this.life <= 0)
+    if (this.y > this.canvas.height + 20 || this.life <= 0) return false
+    return true
   }
 
   draw() {
@@ -76,6 +77,7 @@ export default function RetroLuxuryBirthdayCard() {
   const audioContextRef = useRef(null)
   const confettiRef = useRef([])
   const animationRef = useRef(null)
+  const musicIntervalRef = useRef(null)
   const mp3AudioRef = useRef(null)
 
   const getCurrentDate = () => {
@@ -84,13 +86,60 @@ export default function RetroLuxuryBirthdayCard() {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     })
     const bsDate = 'Asoj 16, 2082'
     return { adDate, bsDate }
   }
 
   const { adDate, bsDate } = getCurrentDate()
+
+  const createAdvancedBirthdayMusic = () => {
+    if (!audioContextRef.current || isMuted) return
+    const ctx = audioContextRef.current
+    const melody = [
+      { freq: 523.25, duration: 0.6, velocity: 0.3 },
+      { freq: 523.25, duration: 0.4, velocity: 0.3 },
+      { freq: 587.33, duration: 1.2, velocity: 0.4 },
+      { freq: 523.25, duration: 1.2, velocity: 0.4 },
+      { freq: 698.46, duration: 1.2, velocity: 0.5 },
+      { freq: 659.25, duration: 2.4, velocity: 0.4 },
+      { freq: 523.25, duration: 0.6, velocity: 0.35 },
+      { freq: 523.25, duration: 0.4, velocity: 0.35 },
+      { freq: 587.33, duration: 1.2, velocity: 0.45 },
+      { freq: 523.25, duration: 1.2, velocity: 0.45 },
+      { freq: 783.99, duration: 1.2, velocity: 0.55 },
+      { freq: 698.46, duration: 2.4, velocity: 0.45 },
+      { freq: 523.25, duration: 0.6, velocity: 0.4 },
+      { freq: 523.25, duration: 0.4, velocity: 0.4 },
+      { freq: 1046.50, duration: 1.2, velocity: 0.6 },
+      { freq: 880.00, duration: 1.2, velocity: 0.5 },
+      { freq: 698.46, duration: 1.2, velocity: 0.5 },
+      { freq: 659.25, duration: 1.2, velocity: 0.4 },
+      { freq: 587.33, duration: 2.4, velocity: 0.4 },
+      { freq: 932.33, duration: 0.6, velocity: 0.45 },
+      { freq: 932.33, duration: 0.4, velocity: 0.45 },
+      { freq: 880.00, duration: 1.2, velocity: 0.5 },
+      { freq: 698.46, duration: 1.2, velocity: 0.5 },
+      { freq: 783.99, duration: 1.2, velocity: 0.55 },
+      { freq: 698.46, duration: 3.6, velocity: 0.6 },
+    ]
+    let currentTime = ctx.currentTime + 0.1
+    melody.forEach(note => {
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+      oscillator.connect(gainNode)
+      gainNode.connect(ctx.destination)
+      oscillator.frequency.value = note.freq
+      oscillator.type = 'sine'
+      gainNode.gain.setValueAtTime(0, currentTime)
+      gainNode.gain.linearRampToValueAtTime(note.velocity, currentTime + 0.05)
+      gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + note.duration)
+      oscillator.start(currentTime)
+      oscillator.stop(currentTime + note.duration)
+      currentTime += note.duration
+    })
+  }
 
   const playBirthdayMusic = async () => {
     if (isMuted) return
@@ -103,8 +152,8 @@ export default function RetroLuxuryBirthdayCard() {
       mp3AudioRef.current.volume = 0.8
       mp3AudioRef.current.loop = true
       await mp3AudioRef.current.play()
-    } catch {
-      console.log('MP3 failed, fallback not implemented yet')
+    } catch (error) {
+      createAdvancedBirthdayMusic()
     }
   }
 
@@ -113,6 +162,7 @@ export default function RetroLuxuryBirthdayCard() {
       mp3AudioRef.current.pause()
       mp3AudioRef.current.currentTime = 0
     }
+    if (musicIntervalRef.current) clearInterval(musicIntervalRef.current)
   }
 
   const startEnhancedConfetti = () => {
@@ -124,18 +174,23 @@ export default function RetroLuxuryBirthdayCard() {
     for (let i = 0; i < 200; i++) {
       const particle = new ConfettiParticle(canvas, audioContextRef.current)
       confettiRef.current.push(particle)
-      if (Math.random() < 0.1) particle.playSound()
+      if (Math.random() < 0.1) {
+        setTimeout(() => particle.playSound(), Math.random() * 2000)
+      }
     }
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      confettiRef.current = confettiRef.current.filter(particle => {
-        particle.update()
-        particle.draw()
-        return particle.life > 0
+      confettiRef.current = confettiRef.current.filter(p => {
+        p.update()
+        p.draw()
+        return p.life > 0
       })
-      if (confettiRef.current.length > 0) {
-        animationRef.current = requestAnimationFrame(animate)
+      if (Math.random() < 0.05 && confettiRef.current.length < 150) {
+        const particle = new ConfettiParticle(canvas, audioContextRef.current)
+        confettiRef.current.push(particle)
+        if (Math.random() < 0.2) particle.playSound()
       }
+      if (confettiRef.current.length > 0) animationRef.current = requestAnimationFrame(animate)
     }
     animate()
   }
@@ -143,12 +198,8 @@ export default function RetroLuxuryBirthdayCard() {
   const handleEnvelopeOpen = async () => {
     if (isEnvelopeAnimating) return
     setIsEnvelopeAnimating(true)
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
-    }
-    if (audioContextRef.current.state === 'suspended') {
-      await audioContextRef.current.resume()
-    }
+    if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
+    if (audioContextRef.current.state === 'suspended') await audioContextRef.current.resume()
     setTimeout(() => {
       setIsOpen(true)
       startEnhancedConfetti()
@@ -176,17 +227,28 @@ export default function RetroLuxuryBirthdayCard() {
     return () => {
       window.removeEventListener('resize', handleResize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      if (musicIntervalRef.current) clearInterval(musicIntervalRef.current)
       if (mp3AudioRef.current) mp3AudioRef.current.pause()
     }
   }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 flex items-center justify-center p-4 overflow-hidden relative">
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='m0 40l40-40h-40v40zm40 0v-40h-40l40 40z'/%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+
       <canvas
         ref={canvasRef}
         className="fixed inset-0 pointer-events-none z-50"
         style={{ width: '100vw', height: '100vh' }}
       />
+
       {isOpen && (
         <div className="fixed top-6 right-6 z-40">
           <Button
@@ -203,46 +265,81 @@ export default function RetroLuxuryBirthdayCard() {
       <div className="relative z-10 w-full max-w-6xl mx-auto">
         {!isOpen ? (
           <div className="envelope-container perspective-2000" onClick={handleEnvelopeOpen}>
-            <div className={`luxury-envelope relative mx-auto cursor-pointer transform transition-all duration-1000 ${isEnvelopeAnimating ? 'animate-envelope-open' : 'hover:scale-105 hover:rotate-1'}`}>
+            <div
+              className={`luxury-envelope relative mx-auto cursor-pointer transform transition-all duration-1000 ${
+                isEnvelopeAnimating ? 'animate-envelope-open' : 'hover:scale-105 hover:rotate-1'
+              }`}
+            >
               <div className="absolute inset-0 bg-black/40 blur-2xl transform translate-y-12 scale-110 rounded-xl"></div>
-              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 w-[480px] h-[320px] md:w-[600px] md:h-[400px] rounded-lg shadow-2xl border-2 border-slate-200"></div>
+
+              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 w-[480px] h-[320px] md:w-[600px] md:h-[400px] rounded-lg shadow-2xl border-2 border-slate-200">
+                <div className="absolute top-4 right-4 w-20 h-24 md:w-24 md:h-28 bg-gradient-to-br from-blue-600 to-blue-800 rounded-sm shadow-lg border-2 border-white">
+                  <div className="absolute inset-1 border border-white/50 rounded-sm">
+                    <div className="flex flex-col items-center justify-center h-full text-white text-xs md:text-sm">
+                      <Heart className="w-4 h-4 md:w-6 md:h-6 mb-1" />
+                      <span className="font-serif">Birthday</span>
+                      <span className="font-serif text-xs">2025</span>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 border-4 border-dashed border-slate-200 rounded-sm animate-ping"></div>
+                </div>
+              </div>
+
+              <div className="envelope-flap absolute top-0 left-0 w-full h-1/2 bg-gradient-to-t from-blue-700 via-blue-600 to-blue-900 rounded-t-lg shadow-inner transform origin-top transition-transform duration-1000"></div>
             </div>
           </div>
         ) : (
-          <div className="opened-card animate-fade-in-up text-center text-slate-200">
-            <h1 className="text-5xl md:text-7xl font-serif font-bold bg-gradient-to-r from-slate-100 via-emerald-400 to-blue-400 bg-clip-text text-transparent mb-6 animate-shimmer">
-              Happy Birthday!
-            </h1>
-            <p className="text-2xl md:text-3xl font-serif mb-12">Wishing you joy and celebration, Dear Uncle</p>
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <Card className="luxury-glass border-slate-600">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-slate-100 flex items-center text-xl font-serif">
-                    <Calendar className="w-6 h-6 mr-3 text-blue-400" />
-                    Today's Date
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-300 text-lg font-serif">{adDate}</p>
-                  <p className="text-slate-400 text-sm mt-2">Gregorian Calendar</p>
-                </CardContent>
-              </Card>
-              <Card className="luxury-glass border-slate-600">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-slate-100 flex items-center text-xl font-serif">
-                    <Calendar className="w-6 h-6 mr-3 text-emerald-400" />
-                    Your Special Day
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-300 text-lg font-serif">{bsDate}</p>
-                  <p className="text-slate-400 text-sm mt-2">Bikram Sambat Calendar</p>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="card-open-container grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+            <Card className="bg-gradient-to-br from-white/80 via-slate-50 to-white/90 shadow-2xl border-2 border-slate-200 transform hover:scale-105 transition-transform">
+              <CardHeader>
+                <CardTitle className="text-2xl md:text-3xl text-emerald-900 font-serif flex items-center gap-2">
+                  🎉 Happy Birthday!
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700 text-lg md:text-xl font-serif leading-relaxed">
+                  Wishing you a day filled with joy, laughter, and unforgettable memories. May your dreams soar higher than the tallest mountains and your heart be lighter than a feather.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-white/80 via-slate-50 to-white/90 shadow-2xl border-2 border-slate-200 transform hover:scale-105 transition-transform">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-emerald-900 font-serif text-xl md:text-2xl">
+                  <Calendar className="w-5 h-5 md:w-6 md:h-6" /> Today’s Date
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700 text-lg md:text-xl font-mono">
+                  AD: {adDate}
+                </p>
+                <p className="text-slate-700 text-lg md:text-xl font-mono">
+                  BS: {bsDate}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .envelope-container {
+          perspective: 2000px;
+        }
+        .luxury-envelope {
+          width: 480px;
+          height: 320px;
+        }
+        .envelope-flap.animate-envelope-open {
+          transform: rotateX(-180deg);
+        }
+        @media (min-width: 768px) {
+          .luxury-envelope {
+            width: 600px;
+            height: 400px;
+          }
+        }
+      `}</style>
     </div>
   )
 }
